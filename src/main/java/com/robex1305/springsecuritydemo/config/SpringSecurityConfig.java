@@ -46,6 +46,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(HttpSecurity req) throws Exception{
         req.exceptionHandling().accessDeniedPage("/unauthorized")
                 .and().formLogin().loginProcessingUrl("/login").defaultSuccessUrl("/home?from=login")
+                .and().oauth2Login().defaultSuccessUrl("/home?from=login")
                 .and().logout().logoutSuccessUrl("/home?from=logout");
     }
 }

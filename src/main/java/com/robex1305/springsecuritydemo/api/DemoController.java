@@ -50,7 +50,6 @@ public class DemoController {
     }
 
     @GetMapping("/home")
-
     @PermitAll
     public String home(@PathParam("from") String from) {
         StringBuilder builder = new StringBuilder();
@@ -95,16 +94,16 @@ public class DemoController {
 
 
     @GetMapping("/user")
-    @Secured("ROLE_USER")
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
     public String user() {
-        return "<b style='color:blue;'>Hello " + getUsername() + ". Anyone <u>authenticated</u> and enroled as <u>USER</u> can access this page</b>" +
+        return "<b style='color:blue;'>Hello " + getUsername() + ". Anyone <u>authenticated</u> and enroled as <u>USER</u> or <u>ADMIN</u> can access this page</b>" +
                 "<br>> <a href='/home'>Return to home page</a>";
     }
 
     @GetMapping("/admin")
     @Secured("ROLE_ADMIN")
     public String admin() {
-        return "<b style='color:blue;'>Hello " + getUsername() + ". Anyone <u>authenticated</u> and enroled as <u>ADMIN</u> can access thi pages</b>" +
+        return "<b style='color:blue;'>Hello " + getUsername() + ". Anyone <u>authenticated</u> and enroled as <u>ADMIN</u> can access this page</b>" +
                 "<br>> <a href='/home'>Return to home page</a>";
     }
 
