@@ -11,6 +11,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +24,8 @@ import javax.annotation.security.PermitAll;
 import javax.net.ssl.SSLSessionContext;
 import javax.websocket.OnError;
 import javax.websocket.server.PathParam;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 @RestController
 public class DemoController {
@@ -34,15 +38,21 @@ public class DemoController {
     }
 
     private String getUsername() {
-
+        String toReturn = null;
         if (!isAuthenticated()) {
-            return "visitor";
+            toReturn = "visitor";
         }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if(authentication instanceof OAuth2AuthenticationToken){
-            return ((OAuth2AuthenticationToken) authentication).getPrincipal().getAttribute("login");
+            OAuth2User user = ((OAuth2AuthenticationToken) authentication).getPrincipal();
+            //Github or Google name attribute
+            toReturn = (String) Stream.of(user.getAttribute("login"), user.getAttribute("given_name"))
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse(authentication.getName());
         }
-        return authentication.getName();
+
+        return StringUtils.capitalize(toReturn);
     }
 
     @GetMapping("/any")
