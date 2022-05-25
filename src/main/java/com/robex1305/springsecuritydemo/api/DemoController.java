@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,8 +38,11 @@ public class DemoController {
         if (!isAuthenticated()) {
             return "visitor";
         }
-
-        return SecurityContextHolder.getContext().getAuthentication().getName();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication instanceof OAuth2AuthenticationToken){
+            return ((OAuth2AuthenticationToken) authentication).getPrincipal().getAttribute("login");
+        }
+        return authentication.getName();
     }
 
     @GetMapping("/any")
